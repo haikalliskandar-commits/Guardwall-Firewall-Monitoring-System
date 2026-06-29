@@ -67,3 +67,9 @@ services:
     volumes:
       - ./grafana:/var/lib/grafana
 
+# Start containers
+docker-compose up -d
+
+# Check InfluxDB has data
+docker exec -it influxdb-pfmon influx -database pfsense -execute "SHOW MEASUREMENTS"
+
