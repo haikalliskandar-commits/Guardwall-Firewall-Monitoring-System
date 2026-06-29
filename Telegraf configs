@@ -1,0 +1,36 @@
+Phase 7: Configure Telegraf
+In pfSense Web GUI → Services → Telegraf:
+
+Field	Value
+Enable	✅ Checked
+InfluxDB Version	1.x
+Server	http://192.168.56.10:8088
+Database	pfsense
+Username	admin
+Password	password
+
+(Additional Configs)
+
+[[inputs.cpu]]
+    percpu = true
+    totalcpu = true
+
+[[inputs.mem]]
+
+[[inputs.net]]
+
+[[inputs.system]]
+
+[[inputs.ping]]
+    urls = ["8.8.8.8"]
+    count = 3
+
+[[inputs.tail]]
+    files = ["/var/log/pfblockerng/dnsbl.log"]
+    data_format = "csv"
+    from_beginning = true
+    name_suffix = "_dnsbl_log"
+    csv_header_row_count = 0
+    csv_column_names = ["blocktype", "timestamp", "domain", "src_ip", "req_agent", "blockmethod", "blocklist", "tld", "feed_name", "duplicate"]
+
+
