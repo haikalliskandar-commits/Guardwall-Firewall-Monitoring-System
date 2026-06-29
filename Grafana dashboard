@@ -1,0 +1,210 @@
+Phase 12: Access Grafana Dashboard
+Step	Action
+1	Open Firefox on Kali → http://127.0.0.1:4000
+2	Login: admin / admin → Change password to password
+3	Add Data Source: InfluxDB → URL: http://influxdb-pfmon:8086 → Database: pfsense → User: admin → Password: password → Save & Test
+4	Import Dashboard: Dashboards → Import → ID: 12023 → Select InfluxDB → Import
+
+1. CPU Usage (Time Series)
+sql
+SELECT mean("usage_user") AS "User", 
+       mean("usage_system") AS "System", 
+       mean("usage_idle") AS "Idle" 
+FROM "cpu" 
+WHERE $timeFilter AND "cpu" = 'cpu-total' 
+GROUP BY time($__interval). CPU Usage (Time Series)
+sql
+SELECT mean("usage_user") AS "User", 
+       mean("usage_system") AS "System", 
+       mean("usage_idle") AS "Idle" 
+FROM "cpu" 
+WHERE $timeFilter AND "cpu" = 'cpu-total' 
+GROUP BY time($__interval)
+
+2. Memory Usage (Gauge)
+sql
+SELECT last("used_percent") AS "Memory Used %" 
+FROM "mem" 
+WHERE $timeFilter
+Visualization: Gauge
+Min: 0, Max: 100
+Unit: Percent
+Thresholds: Green (0-70), Yellow (70-85), Red (85-100)
+Title: Memory Usage
+
+3. Network Traffic (WAN)
+sql
+SELECT mean("bytes_recv") AS "Download", 
+       mean("bytes_sent") AS "Upload" 
+FROM "net" 
+WHERE $timeFilter AND "interface" = 'em0' 
+GROUP BY time($__interval)
+Visualization: Time series
+Unit: bps (bits per second)
+Title: WAN Traffic
+
+4. Network Traffic (LAN)
+sql
+SELECT mean("bytes_recv") AS "Download", 
+       mean("bytes_sent") AS "Upload" 
+FROM "net" 
+WHERE $timeFilter AND "interface" = 'em1' 
+GROUP BY time($__interval)
+Visualization: Time series
+Unit: bps
+Title: LAN Traffic
+
+5. DNSBL Blocked Domains (Table)
+sql
+SELECT "time", "domain", "src_ip", "feed_name" 
+FROM "tail_dnsbl_log" 
+WHERE $timeFilter 
+ORDER BY time DESC 
+LIMIT 20
+Visualization: Table
+Title: DNSBL Blocked Domains
+
+6. DNSBL Blocks Counter (Stat)
+sql
+SELECT count("domain") AS "Blocks" 
+FROM "tail_dnsbl_log" 
+WHERE $timeFilter
+Visualization: Stat (big number)
+Title: DNSBL Blocks
+
+7. Top Blocked Domains (Bar Chart)
+sql
+SELECT count("domain") AS "Count", "domain" 
+FROM "tail_dnsbl_log" 
+WHERE $timeFilter 
+GROUP BY "domain" 
+ORDER BY "Count" DESC 
+LIMIT 10
+Visualization: Bar chart
+Title: Top Blocked Domains
+
+8. Firewall Block Events (Table)
+sql
+SELECT "value" FROM "tail_filterlog" 
+WHERE $timeFilter 
+AND "value" =~ /.*block.*/ 
+ORDER BY time DESC 
+LIMIT 20
+Visualization: Table
+Title: Firewall Block Events
+
+9. Block Count Over Time
+sql
+SELECT count("value") AS "Blocks" 
+FROM "tail_filterlog" 
+WHERE $timeFilter 
+AND "value" =~ /.*block.*/ 
+GROUP BY time($__interval)
+Visualization: Time series
+Title: Block Count Over Time
+
+10. Total Firewall Blocks (Stat)
+sql
+SELECT count("value") AS "Total Blocks" 
+FROM "tail_filterlog" 
+WHERE $timeFilter 
+AND "value" =~ /.*block.*/
+Visualization: Stat
+Title: Total Firewall Blocks
+
+11. System Load Average
+sql
+SELECT last("load1") AS "1 min", 
+       last("load5") AS "5 min", 
+       last("load15") AS "15 min" 
+FROM "system" 
+WHERE $timeFilter
+Visualization: Stat or Gauge
+Title: System Load Average
+
+12. System Uptime
+sql
+SELECT last("uptime") AS "Uptime" 
+FROM "system" 
+WHERE $timeFilter
+Visualization: Stat
+Unit: seconds (or format as days)
+Title: System Uptime
+
+13. Gateway Response Time (Ping)
+sql
+SELECT mean("average_response_ms") AS "Ping (ms)" 
+FROM "ping" 
+WHERE $timeFilter 
+GROUP BY time($__interval)
+Visualization: Time series
+Unit: ms
+Title: Gateway Response Time
+
+14. Packet Loss
+sql
+SELECT mean("percent_packet_loss") AS "Packet Loss %" 
+FROM "ping" 
+WHERE $timeFilter 
+GROUP BY time($__interval)
+Visualization: Time series
+Unit: percent
+Title: Packet Loss
+
+15. Active IPs (Unique IPs)
+sql
+SELECT count(DISTINCT "value") AS "Active IPs" 
+FROM "tail_filterlog" 
+WHERE $timeFilter 
+AND "value" =~ /.*192.168.*/
+Visualization: Stat
+Title: Active Network IPs
+
+16. Top Active IPs (Bar Chart)
+sql
+SELECT count("value") AS "Activity", "value" AS "IP" 
+FROM "tail_filterlog" 
+WHERE $timeFilter 
+AND "value" =~ /.*192.168.*/ 
+GROUP BY "value" 
+ORDER BY "Activity" DESC 
+LIMIT 10
+Visualization: Bar chart
+Title: Top Active IPs
+
+17. Blocked Ports (Table)
+sql
+SELECT "value" FROM "tail_filterlog" 
+WHERE $timeFilter 
+AND "value" =~ /.*block.*/ 
+AND "value" =~ /.*dport.*/ 
+ORDER BY time DESC 
+LIMIT 20
+Visualization: Table
+Title: Blocked Ports
+
+18. DNSBL Blocks by Feed (Pie Chart)
+sql
+SELECT count("domain") AS "Count", "feed_name" 
+FROM "tail_dnsbl_log" 
+WHERE $timeFilter 
+GROUP BY "feed_name"
+Visualization: Pie chart
+Title: DNSBL Blocks by Feed
+
+19. Disk Usage (Gauge)
+sql
+SELECT last("used_percent") AS "Disk Used %" 
+FROM "disk" 
+WHERE $timeFilter
+Visualization: Gauge
+Unit: Percent
+Title: Disk Usage
+
+20. PfSense Version (Stat)
+sql
+SELECT last("version") AS "Version" 
+FROM "system" 
+WHERE $timeFilter
+Visualization: Stat
+Title: pfSense Version
