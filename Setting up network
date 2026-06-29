@@ -1,0 +1,22 @@
+Phase 2: Assign Interfaces (First Boot)
+When pfSense boots, you'll see the console menu.
+
+Step	Action
+1	Select Option 1: Assign Interfaces
+2	Type n for VLANs
+3	Assign WAN: em0
+4	Assign LAN: em1
+5	Assign OPT1: em2 (press Enter to skip if not needed)
+6	Type y to proceed
+
+
+Phase 3: Set LAN IP Address
+Step	Action
+1	Select Option 2: Set interface(s) IP address
+2	Select 2 for LAN
+3	Enter IP: 192.168.56.1
+4	Enter Subnet: 24
+5	Upstream gateway: press Enter
+6	Enable DHCP: y
+7	DHCP range: 192.168.56.100 → 192.168.56.200
+8	Revert to HTTP? n
