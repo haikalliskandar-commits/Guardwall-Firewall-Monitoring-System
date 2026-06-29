@@ -1,0 +1,28 @@
+Phase 1: Install pfSense (Server)
+1. Download pfSense ISO
+
+Go to: https://www.pfsense.org/download/
+
+Select: AMD64 (64-bit) → DVD Image (ISO)
+
+Download the .iso.gz file → Extract to .iso
+
+2. Create Virtual Machine in VirtualBox
+
+Setting	Value
+Name	pfSense
+Type	BSD → FreeBSD (64-bit)
+RAM	2048 MB (2GB)
+Hard Disk	20 GB
+Network Adapter 1	NAT (WAN)
+Network Adapter 2	Internal Network → guardwall_LAN (LAN)
+Network Adapter 3	Internal Network → guardwall_LAN (OPT1)
+3. Boot and Install pfSense
+
+Boot from ISO → Press Enter
+
+Choose "Accept these Settings"
+
+Choose "Install pfSense" → "Auto (ZFS)" → "Strip" → "Yes"
+
+After installation, select "Reboot" → Remove ISO before rebooting
