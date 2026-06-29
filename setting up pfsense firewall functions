@@ -1,0 +1,22 @@
+Phase 4: Access pfSense Web GUI
+Step	Action
+1	Open browser on Admin VM → Go to https://192.168.56.1
+2	Login: admin / pfsense
+3	Complete Setup Wizard: Set hostname, domain, DNS, timezone, new password
+Phase 5: Install pfBlockerNG and Telegraf
+In pfSense Web GUI:
+
+Step	Action
+1	Go to System → Package Manager → Available Packages
+2	Search and install pfBlockerNG-devel
+3	Search and install Telegraf
+Phase 6: Configure pfBlockerNG (DNSBL)
+In pfSense Web GUI:
+
+Step	Action
+1	Go to Firewall → pfBlockerNG → DNSBL
+2	Set DNSBL Mode → Unbound python mode
+3	Set DNSBL Virtual IP → 0.0.0.0
+4	Scroll to DNSBL Custom → Add domains to block (e.g., youtube.com)
+5	Click Save
+6	Go to Update → Click Run
